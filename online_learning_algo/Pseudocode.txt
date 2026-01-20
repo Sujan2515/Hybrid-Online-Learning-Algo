@@ -1,0 +1,76 @@
+BEGIN
+
+Initialize Q-network
+Initialize Target-network
+Copy Q-network weights to Target-network
+
+Initialize replay memory
+Initialize feedback history
+
+Load dataset using CustomDataStream
+
+Set hyperparameters:
+    learning_rate
+    gamma
+    epsilon
+    epsilon_decay
+    epsilon_min
+    batch_size
+    max_episodes
+    target_update_frequency
+
+FOR episode = 1 TO MAX_EPISODES DO
+
+    Get current state (feature vector)
+
+    // Action selection (ε-greedy policy)
+    Generate random number r ∈ [0, 1]
+    IF r < epsilon THEN
+        action ← random action
+    ELSE
+        action ← argmax(Q-network(state))
+    END IF
+
+    // Execute action
+    Modify learning rate based on selected action
+    Predict output using Q-network
+    Compute reward using Mean Squared Error (MSE)
+    Move to next data point
+    next_state ← new features
+
+    Store (state, action, reward, next_state) in replay memory
+
+    // Experience replay
+    IF replay memory size ≥ BATCH_SIZE THEN
+        Sample a mini-batch from replay memory
+
+        FOR each transition in mini-batch DO
+            Compute target Q-value using Target-network
+            Update Q-value for selected action
+        END FOR
+
+        Train Q-network using gradient descent
+    END IF
+
+    // Feedback handling
+    feedback ← get feedback from data stream
+    IF feedback exists THEN
+        Adjust learning rate based on feedback
+        Adjust epsilon based on feedback trends
+    END IF
+
+    // Update target network
+    IF episode MOD TARGET_UPDATE_FREQ = 0 THEN
+        Copy Q-network weights to Target-network
+    END IF
+
+    Log reward and epsilon value
+    Decay epsilon
+
+END FOR
+
+Plot:
+    Reward vs Episode
+    Epsilon vs Episode
+
+END
